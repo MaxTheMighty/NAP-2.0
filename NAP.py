@@ -1,5 +1,6 @@
 
 
+from logging import log
 import discord
 import discord.ext.commands as commands
 import os
@@ -8,9 +9,11 @@ import json
 import AdminCog
 import asyncio
 import Utility
+
 #---------------variables---------------
 
 bot_data = None
+log = []
 current_status = ""
 
 #---------------init--------------------
@@ -23,6 +26,8 @@ DISCORD_KEY = os.getenv("DISCORD_KEY")
 with open("bot_file.json", 'r+') as file:
     bot_data = json.load(file)
 
+
+    
 #--------------on ready----------------
 
 @bot.event
@@ -34,15 +39,13 @@ async def on_ready():
     print("Ready!")
 
     
-
 #---------------commands that need to stay here--------------
 @bot.command(is_owner=True, hidden= True)
 async def reload(ctx):
-    await Utility.save(bot_data)
+    await Utility.save(bot_data,log)
     for cog in bot.cogs.copy():
         bot.reload_extension(cog)
-
-
+#------------------------events-----------------------------
 
 #-----------------------Listener-----------------------------
 

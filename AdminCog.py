@@ -1,19 +1,22 @@
+from discord.ext.commands.core import is_owner
 from AudioCog import AudioCog
 from attr import __title__
 import discord
-import json
 import asyncio
 import NAP
 import discord.ext.commands as commands
 import discord.ext.tasks as tasks
 import Utility
 import re
-import io
+
+import datetime as dt
+
 class AdminCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot_data = NAP.bot_data
         self.bot_key = NAP.DISCORD_KEY
+        self.log = NAP.log
         self.autosave.start()
         
     @commands.command(is_owner=True,hidden = True)
@@ -24,7 +27,7 @@ class AdminCog(commands.Cog):
 
     @commands.command(is_owner=True,hidden = True)
     async def shutdown(self,ctx):
-        await Utility.save(self.bot_data)
+        await Utility.save(self.bot_data,self.log)
         await self.bot.close()
 
     @commands.command(is_owner=True,hidden = True)
@@ -36,12 +39,23 @@ class AdminCog(commands.Cog):
 
     @commands.command(is_owner=True,hidden = True)
     async def save(self,ctx):
-        await Utility.save(self.bot_data)
+        await Utility.save(self.bot_data,self.log)
+
 
     @tasks.loop(minutes=15)
     async def autosave(self):
         print("Auto saving")
-        await Utility.save(self.bot_data)
+        await Utility.save(self.bot_data,self.log)
+
+    @commands.command(is_owner=True)
+    async def t(self,ctx):
+        pass
+
+
+    @commands.Cog.listener()
+    async def on_command(self,ctx):
+        str = f"[{dt.datetime.now()}] {ctx.author.name} called {ctx.message.content} in {ctx.guild.name}\n"
+        self.log.append(str)
 
     @commands.command(is_owner=True,hidden=True)
     async def dump(self,ctx, count, filename):

@@ -1,6 +1,7 @@
 from inspect import unwrap
 import discord
 import discord.ext.commands as commands
+from discord.ext.commands.core import is_owner
 import discord.ext.tasks as tasks
 import NAP
 import Utility
@@ -34,7 +35,7 @@ class FunCog(commands.Cog):
 
 
     #BE VERY CAREFUL WITH THIS
-    @commands.command()
+    @commands.command(is_owner=True,hidden=True)
     async def think(self,ctx):
         question = ctx.message.content[7:]
         question_send = f"""Marv is a chatbot that reluctantly answers questions.\n

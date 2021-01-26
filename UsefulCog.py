@@ -44,7 +44,7 @@ class UsefulCog(commands.Cog):
 
     @commands.command(description = "Shows the status of a Minecraft Server")
     async def serverup(self,ctx: commands.Context, ip: str = "mc.hypixel.net"):
-        print(f"{ctx.author.name} called serverup in {ctx.author.guild}")
+        
         url = "https://api.mcsrvstat.us/2/"+ip
         r = requests.get(url).json()
         if("hostname" not in r.keys()):
