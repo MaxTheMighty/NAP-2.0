@@ -1,5 +1,5 @@
 /__pycache__
-/Audio/
+/Audio/*.mp4
 *.env
 *.bat
 *.md

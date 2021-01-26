@@ -8,9 +8,9 @@ import asyncio
 import random
 import os
 import openai
-
-API_KEY = "sk-7r3QdyVLAzhEEtQOY2jfH3s7gWLH6IDC6Jy50Tvq"
-openai.api_key = API_KEY
+import dotenv as dev
+dev.load_dotenv(dotenv_path = ".//keys.env")
+openai.api_key = os.getenv("OPEN_API_KEY")
 
 class FunCog(commands.Cog):
     def __init__(self,bot):
