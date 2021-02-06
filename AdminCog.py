@@ -8,7 +8,7 @@ import discord.ext.commands as commands
 import discord.ext.tasks as tasks
 import Utility
 import re
-
+import traceback
 import datetime as dt
 
 class AdminCog(commands.Cog):
@@ -27,7 +27,7 @@ class AdminCog(commands.Cog):
 
     @commands.command(is_owner=True,hidden = True)
     async def shutdown(self,ctx):
-        await Utility.save(self.bot_data,self.log)
+        await Utility.save(self.log)
         await self.bot.close()
 
     @commands.command(is_owner=True,hidden = True)
@@ -39,18 +39,32 @@ class AdminCog(commands.Cog):
 
     @commands.command(is_owner=True,hidden = True)
     async def save(self,ctx):
-        await Utility.save(self.bot_data,self.log)
+        await Utility.save(log = self.log)
 
 
     @tasks.loop(minutes=15)
     async def autosave(self):
         print("Auto saving")
-        await Utility.save(self.bot_data,self.log)
+        await Utility.save(self.log)
 
-    @commands.command(is_owner=True)
-    async def t(self,ctx):
-        pass
-
+    @commands.Cog.listener()
+    async def on_command_error(self,ctx, error, *args, **kwargs):
+        errorChannel = self.bot.get_channel(746100508825092157)
+        errorOut = discord.Embed(title=':x: Command Error', colour=0xe74c3c) #Red
+        errorOut.timestamp = dt.datetime.utcnow()
+        if isinstance(error, commands.CommandOnCooldown):
+            print("A command was called when it was on cooldown")
+            emOut = discord.Embed(title = "**ERROR**", description = "That command is on a cooldown, try again in `{:.2f}` seconds (this command has a `{:.0f}` second cooldown)".format(error.retry_after, error.cooldown.per), color = discord.Colour.red())
+            await ctx.send(embed = emOut)  
+        elif isinstance(error, commands.NotOwner):
+            await ctx.send(embed = discord.Embed(title = "**ERROR**", description = "That command is for owners only", color = discord.Colour.red()))
+        elif isinstance(error, commands.CommandNotFound):
+            pass
+        else:
+            errorOut.description = '```py\n%s \n```' % error
+            print(error)
+            await errorChannel.send(traceback.format_exc())
+            await errorChannel.send(embed = errorOut)
 
     @commands.Cog.listener()
     async def on_command(self,ctx):
@@ -69,6 +83,8 @@ class AdminCog(commands.Cog):
                     if 'http' in cont:
                         cont = re.sub(r'http\S+', '', cont)
                     f.write(cont+'\n')
+
+
 
         
 

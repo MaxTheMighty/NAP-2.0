@@ -35,8 +35,7 @@ class AudioCog(commands.Cog):
             await self.play_intro(user=member)
 
     async def play_intro(self,user: discord.User):
-        #lol remember when i said to follow PEP8 
-        #print(NAP.bot_data['users'][f'{user.id}'])
+
         if(str(user.id) in NAP.bot_data['users'].keys() and not user.bot): 
             url = NAP.bot_data['users'][f'{user.id}']['intro_url']
             if(url is not None):
@@ -53,9 +52,6 @@ class AudioCog(commands.Cog):
 
 
 
-
-
-
     @commands.command(description = 'Sets your intro theme, requires a youtube URL')
     async def setintro(self,ctx,url):
         print("set intro called")
@@ -64,9 +60,13 @@ class AudioCog(commands.Cog):
         prev_url = NAP.bot_data['users'][f'{ctx.author.id}']['intro_url']
         if(prev_url != None):
             print(f"foudn previous url, deleteing, .//Audio//{prev_url}.mp4")
-            #add a try {} except {} here for errors
-            os.remove(f'.//Audio//{prev_url}.mp4')
+
+            try:
+                os.remove(f'.//Audio//{prev_url}.mp4')
+            except FileNotFoundError:
+                print("File not found, ignoring")
         video_info = await self.download_song(url = url,fname = f'{ctx.author.name}{ctx.author.id%10000}',max=10)
+        print("video_info:",video_info)
         NAP.bot_data['users'][f'{ctx.author.id}']['intro_url'] = video_info[0]  
         NAP.bot_data['users'][f'{ctx.author.id}']['intro_boolean'] = True
         emOut = discord.Embed(title = "New Intro", description = f"{video_info[1]}")
@@ -88,6 +88,7 @@ class AudioCog(commands.Cog):
         client.play(audio_source)
         while(client.is_playing()):
             await asyncio.sleep(0.1)
+        #there another way to do this with callbacks, but its less neat
         await client.disconnect(force = True)    
 
 
@@ -109,7 +110,6 @@ class AudioCog(commands.Cog):
             os.remove(path)
             fname+='(t)'
             print(fname)
-            
         return (fname,title,thumbnail)
 
 def setup(bot):

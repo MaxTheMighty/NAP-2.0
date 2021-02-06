@@ -42,7 +42,7 @@ async def on_ready():
 #---------------commands that need to stay here--------------
 @bot.command(is_owner=True, hidden= True)
 async def reload(ctx):
-    await Utility.save(bot_data,log)
+    await Utility.save(log)
     for cog in bot.cogs.copy():
         bot.reload_extension(cog)
 #------------------------events-----------------------------

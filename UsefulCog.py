@@ -18,8 +18,12 @@ class UsefulCog(commands.Cog):
             if(len(attachment) > 0 and attachment[0].size < 8_000_000):
                 await attachment[0].save(f".//Temp//{user.id}{attachment[0].filename}")
                 file = f".//Temp//{user.id}{attachment[0].filename}"
+            else: 
+                print("No attachment, or attachment too big")
             if(len(message.content) > 0):
                 out+=message.content
+            else:
+                print("No content")
             out+=f"\n`from {message.author.display_name} in {message.guild.name} at {message.created_at}`"
             await user.send(embed = embeds[0] if embeds else None, content = out,file= discord.File(file,spoiler=attachment[0].is_spoiler()) if attachment else None)
             os.remove(file) if file != None else 0
