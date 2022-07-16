@@ -35,7 +35,6 @@ class AudioCog(commands.Cog):
             await self.play_intro(user=member)
 
     async def play_intro(self,user: discord.User):
-
         if(str(user.id) in NAP.bot_data['users'].keys() and not user.bot): 
             url = NAP.bot_data['users'][f'{user.id}']['intro_url']
             if(url is not None):

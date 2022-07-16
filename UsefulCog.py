@@ -3,6 +3,8 @@ from discord.channel import DMChannel
 import discord.ext.commands as commands
 import os
 import requests
+import random
+import asyncio
 class UsefulCog(commands.Cog):
     def __init__(self,bot):    
         self.bot = bot
@@ -10,6 +12,7 @@ class UsefulCog(commands.Cog):
     @commands.Cog.listener('on_reaction_add')
     async def on_reaction_add(self,reaction,user):
         message: discord.Message = reaction.message
+        print(reaction)
         if(reaction.emoji == '🔖' and not isinstance(message.channel,discord.DMChannel)):
             embeds: discord.Embed = message.embeds
             attachment: discord.Attachment = message.attachments
@@ -29,6 +32,27 @@ class UsefulCog(commands.Cog):
             os.remove(file) if file != None else 0
         if(reaction.emoji == '❌' and isinstance(message.channel,discord.DMChannel)):
             await message.delete()
+        if(reaction.emoji == '🥡'):
+            message_info = message.jump_url.split("/")
+            message_id = message_info[-1]
+            channel_id = message_info[-2]
+            channel = await self.bot.fetch_channel(channel_id)
+            message = await channel.fetch_message(message_id)
+            await message.delete()
+
+    @commands.Cog.listener('on_message')
+    async def on_message(self,message):
+        if(not message.author.bot): #lol
+            if(random.randrange(1,20) == 1):
+                ratio = await message.reply("Get Ratiod")
+                await ratio.add_reaction('❤️')
+                author = message.author
+                if(not author.voice == None):
+                    await author.move_to(None)
+
+                print(f"{message.author.name} got ratioed in {message.guild.name}")
+
+           
 
 
     @commands.command(description = "Displays information about the bot")
@@ -48,7 +72,6 @@ class UsefulCog(commands.Cog):
 
     @commands.command(description = "Shows the status of a Minecraft Server")
     async def serverup(self,ctx: commands.Context, ip: str = "mc.hypixel.net"):
-        
         url = "https://api.mcsrvstat.us/2/"+ip
         r = requests.get(url).json()
         if("hostname" not in r.keys()):
@@ -63,6 +86,9 @@ class UsefulCog(commands.Cog):
             if('list' in  r['players']):
                 msgout.add_field(name = "Players", value = f"".join(f"`{x}`\n" for x in r['players']['list']))
         await ctx.send(embed = msgout)
+
+
+
 
 
 def setup(bot):

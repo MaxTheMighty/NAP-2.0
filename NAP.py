@@ -10,6 +10,12 @@ import AdminCog
 import asyncio
 import Utility
 
+
+
+
+
+
+
 #---------------variables---------------
 
 bot_data = None
@@ -45,8 +51,9 @@ async def reload(ctx):
     await Utility.save(log)
     for cog in bot.cogs.copy():
         bot.reload_extension(cog)
-#------------------------events-----------------------------
 
+
+#------------------------events-----------------------------
 #-----------------------Listener-----------------------------
 
 #make sure it isnt ran when importing from adminCog

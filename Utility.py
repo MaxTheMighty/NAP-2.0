@@ -8,8 +8,9 @@ from pathlib import Path
 
 
 async def save(log):
+
     with open('bot_file.json','w+') as file:
-        json.dump(NAP.bot_data,file,indent=2)
+       json.dump(NAP.bot_data,file,indent=2)
     with open('commands.log','a+') as log_file:
         try:
             log_file.writelines(log)
@@ -17,9 +18,8 @@ async def save(log):
             print("Unicode Decode Error, Passing!")
 
     NAP.log.clear()
-
-
 async def create_user(bot_data: Dict,user: discord.User):
+
     bot_data['users'].update(
         {
             f'{user.id}': {
